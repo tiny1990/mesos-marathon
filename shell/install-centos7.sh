@@ -18,8 +18,8 @@ rexray:
   storageDrivers:
   - ec2
 aws:
-  accessKey: AKIAPLEK2FOXVZEIUWEQ
-  secretKey: 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
+  accessKey: 
+  secretKey: 
 EOF'
 sudo rexray start -c /etc/rexray/config.yml
 }
