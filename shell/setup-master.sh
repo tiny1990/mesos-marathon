@@ -3,15 +3,24 @@
 . ./shell/install-centos7.sh
 
 MASTER_IP=$(cat master)
-SLAVE_IP=$(cat slave)
 
-
+# 安装 mesos
 install_mesos
+
+# 卸载mesos_slaves
 uninstall_mesos_slave
-install_etcd '$MASTER_IP:2379'
+
+# 安装etcd
+install_etcd $MASTER_IP:2379
+
+# 安装zk
 install_zookeeper
 
+# 启动mesos－master
 start_mesos_master
+
+# 启动zk
 start_zookeeper
 
-start_mesos_marathon '$MASTER_IP:5050' '$MASTER_IP:2181'
+# 启动marathon
+start_mesos_marathon $MASTER_IP:5050 $MASTER_IP:2181
