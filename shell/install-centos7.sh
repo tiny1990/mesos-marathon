@@ -1,6 +1,5 @@
 #! /bin/bash
 
-USER_NEME='ec2-user'
 install_mesos()
 {
 	sudo rpm -Uvh http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
@@ -18,8 +17,8 @@ rexray:
   storageDrivers:
   - ec2
 aws:
-  accessKey: 
-  secretKey: 
+  accessKey:$1
+  secretKey:$2
 EOF'
 sudo rexray start -c /etc/rexray/config.yml
 }
@@ -28,6 +27,12 @@ uninstall_mesos_slave()
 {
 	sudo systemctl stop mesos-slave.service
 	sudo systemctl disable mesos-slave.service
+}
+
+uninstall_mesos_master()
+{
+	sudo systemctl stop mesos-master.service
+	sudo systemctl disable mesos-master.service
 }
 
 start_mesos_master()
