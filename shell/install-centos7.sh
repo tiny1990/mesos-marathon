@@ -40,11 +40,11 @@ install_etcd()
 {
 curl -L https://github.com/coreos/etcd/releases/download/v3.0.6/etcd-v3.0.6-linux-amd64.tar.gz -o etcd-v3.0.6-linux-amd64.tar.gz
 tar xzvf etcd-v3.0.6-linux-amd64.tar.gz && cd etcd-v3.0.6-linux-amd64
-./etcd-v3.0.6-linux-amd64/etcd \
+./etcd \
 --listen-peer-urls http://0.0.0.0:2380 \
 --listen-client-urls http://0.0.0.0:2379 \
 --advertise-client-urls http://$1 &
-
+cd ..
 }
 
 start_mesos_master()
@@ -60,6 +60,10 @@ start_mesos_slave()
 
 start_mesos_slave_calico()
 {
+
+	wget http://www.projectcalico.org/builds/calicoctl
+	chmod +x calicoctl
+	sudo mv calicoctl /bin
 	sudo docker pull calico/node:v0.20.0
 	sudo docker pull calico/node-libnetwork:v0.8.0
 	sudo ETCD_AUTHORITY=$1 calicoctl node --libnetwork
@@ -68,7 +72,7 @@ start_mesos_slave_calico()
 
 start_docker_etcd()
 {
-	sudo docker daemon --cluster-store=etcd://$1 &   &
+	sudo docker daemon --cluster-store=etcd://$1 &
 }
 
 
