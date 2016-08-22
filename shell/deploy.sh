@@ -10,6 +10,6 @@ MASTER='ec2-52-43-231-34.us-west-2.compute.amazonaws.com'
 for slave in `cat ./servers/slaves`
 do
 	scp -r ../mesos-marathon $USER_NEME@$slave:~/
-	ssh $USER_NEME@$slave 'echo $slave > ~/mesos-marathon/slave'
-	ssh $USER_NEME@$slave 'echo $MASTER > ~/mesos-marathon/master'
+	ssh $USER_NEME@$slave "echo "$slave" > ~/mesos-marathon/slave"
+	ssh $USER_NEME@$slave "echo "$MASTER" > ~/mesos-marathon/master"
 done
