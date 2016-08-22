@@ -1,5 +1,6 @@
 #! /bin/bash
 
+
 install_mesos()
 {
 	sudo rpm -Uvh http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
@@ -12,15 +13,19 @@ install_mesos()
 install_rexray()
 {
 sudo curl -sSL https://dl.bintray.com/emccode/rexray/install | sh -s -- stable 0.3.3
-sudo bash -c 'cat >/etc/rexray/config.yml <<EOF
-rexray:
-  storageDrivers:
-  - ec2
-aws:
-  accessKey:$1
-  secretKey:$2
-EOF'
-sudo rexray start -c /etc/rexray/config.yml
+#sudo bash -c 'cat >/etc/rexray/config.yml <<EOF
+#rexray:
+#  storageDrivers:
+#  - ec2
+#aws:
+#  accessKey:$1
+#  secretKey:$2
+#EOF'
+export REXRAY_STORAGEDRIVERS=ec2
+export AWS_ACCESSKEY=$1
+export AWS_SECRETKEY=$2
+sudo rexray service start
+#sudo rexray start -c /etc/rexray/config.yml
 }
 
 uninstall_mesos_slave()
@@ -47,27 +52,46 @@ tar xzvf etcd-v3.0.6-linux-amd64.tar.gz && cd etcd-v3.0.6-linux-amd64
 cd ..
 }
 
+install_zookeeper()
+{
+	sudo yum -y install mesosphere-zookeeper
+}
+
+start_zookeeper()
+{
+	sudo service zookeeper restart
+}
+
 start_mesos_master()
 {
 	sudo mesos-master --ip=0.0.0.0 --work_dir=/var/lib/mesos  &
 }
 
+start_mesos_marathon()
+{
+	sudo marathon --master $1 --hostname $1 --zk zk://$2 --http_port 8888  --enable_features external_volumes &
+}
 
 start_mesos_slave()
 {
-	sudo mesos-slave --master=$1  --advertise_ip=$2 --containerizers=docker,mesos  --work_dir=/var/lib/mesos --enable_features external_volume &
+	sudo mesos-slave --master=$1  --advertise_ip=$2 --containerizers=docker,mesos  --work_dir=/var/lib/mesos &
 }
 
 start_mesos_slave_calico()
 {
-
 	wget http://www.projectcalico.org/builds/calicoctl
 	chmod +x calicoctl
 	sudo mv calicoctl /bin
-	sudo docker pull calico/node:v0.20.0
-	sudo docker pull calico/node-libnetwork:v0.8.0
+	sudo docker pull calico/node-libnetwork:latest
+	sudo docker pull calico/node:latest
 	sudo ETCD_AUTHORITY=$1 calicoctl node --libnetwork
 	sudo ETCD_AUTHORITY=$1 calicoctl pool add 192.168.0.0/16 --ipip --nat-outgoing
+	sudo docker network create --driver calico --ipam-driver calico datapipeline 
+}
+
+start_mesos_dns()
+{
+
 }
 
 start_docker_etcd()
