@@ -3,7 +3,7 @@
 install_mesos()
 {
 	sudo rpm -Uvh http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
-	wget wget https://github.com/tiny1990/mesos-marathon/blob/master/package/libevent-devel-2.0.21-4.el7.i686.rpm
+	wget https://github.com/tiny1990/mesos-marathon/raw/master/package/libevent-devel-2.0.21-4.el7.i686.rpm
 	sudo yum install -y ./libevent-devel-2.0.21-4.el7.i686.rpm
 	rm ./libevent-devel-2.0.21-4.el7.i686.rpm
 	sudo yum -y install mesos	
@@ -35,6 +35,18 @@ uninstall_mesos_master()
 	sudo systemctl disable mesos-master.service
 }
 
+
+install_etcd()
+{
+curl -L https://github.com/coreos/etcd/releases/download/v3.0.6/etcd-v3.0.6-linux-amd64.tar.gz -o etcd-v3.0.6-linux-amd64.tar.gz
+tar xzvf etcd-v3.0.6-linux-amd64.tar.gz && cd etcd-v3.0.6-linux-amd64
+./etcd-v3.0.6-linux-amd64/etcd \
+--listen-peer-urls http://0.0.0.0:2380 \
+--listen-client-urls http://0.0.0.0:2379 \
+--advertise-client-urls http://$1 &
+
+}
+
 start_mesos_master()
 {
 	sudo mesos-master --ip=0.0.0.0 --work_dir=/var/lib/mesos  &
@@ -52,6 +64,11 @@ start_mesos_slave_calico()
 	sudo docker pull calico/node-libnetwork:v0.8.0
 	sudo ETCD_AUTHORITY=$1 calicoctl node --libnetwork
 	sudo ETCD_AUTHORITY=$1 calicoctl pool add 192.168.0.0/16 --ipip --nat-outgoing
+}
+
+start_docker_etcd()
+{
+	sudo docker daemon --cluster-store=etcd://$1 &   &
 }
 
 
