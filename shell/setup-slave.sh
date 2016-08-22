@@ -21,4 +21,4 @@ start_docker_etcd $MASTER_IP:2379
 start_mesos_slave_calico $MASTER_IP:2379
 
 ## 启动slave
-start_mesos_slave $MASTER_IP:5050 '52.39.62.75'
+start_mesos_slave $MASTER_IP:5050 $SLAVE_IP
