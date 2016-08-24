@@ -96,10 +96,41 @@ start_mesos_slave_calico()
 	sudo docker network create --driver calico --ipam-driver calico datapipeline 
 }
 
+## $1 is mesos-master ip
+## $2 is mesos-dns ip (local ip)
 start_mesos_dns()
 {
 	## TODO
-	echo aaa
+	sudo mkdir -p /usr/local/mesos-dns/
+	sudo wget -O /usr/local/mesos-dns/mesos-dns  https://github.com/mesosphere/mesos-dns/releases/download/v0.5.2/mesos-dns-v0.5.2-linux-amd64
+    sudo chmod +x /usr/local/mesos-dns/mesos-dns
+	sudo bash -c 'cat >/usr/local/mesos-dns/config.json <<EOF
+{
+  "masters": ["MASTER:5050"],
+  "ZkDetectionTimeout": 0,
+  "refreshSeconds": 60,
+  "ttl": 60,
+  "domain": "mesos",
+  "port": 53,
+  "resolvers": ["8.8.8.8"],
+  "timeout": 5,
+  "httpon": true,
+  "dnson": true,
+  "httpport": 8123,
+  "externalon": true,
+  "listener": "0.0.0.0",
+  "SOAMname": "ns1.mesos",
+  "SOARname": "root.ns1.mesos",
+  "SOARefresh": 60,
+  "SOARetry":   600,
+  "SOAExpire":  86400,
+  "SOAMinttl": 60,
+  "IPSources": [ "netinfo","mesos","host"]
+}
+EOF'
+	sudo sed -i 's/MASTER/'$1'/g' /usr/local/mesos-dns/config.json
+    sudo sed -i '1s/^/nameserver '$2'\n /' /etc/resolv.conf
+    sudo /usr/local/mesos-dns/mesos-dns -config /usr/local/mesos-dns/config.json &
 }
 
 start_docker_etcd()
