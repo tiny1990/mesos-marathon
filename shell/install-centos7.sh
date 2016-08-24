@@ -13,6 +13,8 @@ install_mesos()
 install_marathon()
 {
 	sudo yum -y install marathon
+	sudo systemctl stop marathon.service
+	sudo systemctl disable marathon.service
 }
 
 install_rexray()
