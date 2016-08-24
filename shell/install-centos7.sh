@@ -83,8 +83,8 @@ start_mesos_master()
 
 start_mesos_marathon()
 {
-	#  --enable_features external_volumes is not support?
-	sudo marathon --master $1:5050 --hostname $1 --zk zk://$2 --http_port 8888 &
+	#   is not support?
+	sudo marathon --master $1:5050 --hostname $1 --zk zk://$2 --http_port 8888 --enable_features external_volumes &
 }
 
 start_mesos_slave()
