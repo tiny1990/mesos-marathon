@@ -27,17 +27,16 @@ install_marathon()
 install_rexray()
 {
 sudo curl -sSL https://dl.bintray.com/emccode/rexray/install | sh -s -- stable 0.3.3
-#sudo bash -c 'cat >/etc/rexray/config.yml <<EOF
-#rexray:
-#  storageDrivers:
-#  - ec2
-#aws:
-#  accessKey:$1
-#  secretKey:$2
-#EOF'
-export REXRAY_STORAGEDRIVERS=ec2
-export AWS_ACCESSKEY=$1
-export AWS_SECRETKEY=$2
+sudo bash -c 'cat >/etc/rexray/config.yml <<EOF
+rexray:
+  storageDrivers:
+  - ec2
+aws:
+  accessKey:AKEY
+  secretKey:SKEY
+EOF'
+sudo sed -i 's/AKEY/'$1'/g' /etc/rexray/config.yml
+sudo sed -i 's/SKEY/'$2'/g' /etc/rexray/config.yml
 sudo rexray service start
 #sudo rexray start -c /etc/rexray/config.yml
 }
@@ -136,7 +135,7 @@ start_mesos_dns()
   "IPSources": [ "netinfo","mesos","host"]
 }
 EOF'
-	sudo sed -i 's/MASTER/'$1'/g' /usr/local/mesos-dns/config.json
+    sudo sed -i 's/MASTER/'$1'/g' /usr/local/mesos-dns/config.json
     sudo sed -i '1s/^/nameserver '$2'\n /' /etc/resolv.conf
     sudo /usr/local/mesos-dns/mesos-dns -config /usr/local/mesos-dns/config.json &
 }
