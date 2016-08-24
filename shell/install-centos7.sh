@@ -7,14 +7,21 @@ install_mesos()
 	wget https://github.com/tiny1990/mesos-marathon/raw/master/package/libevent-devel-2.0.21-4.el7.i686.rpm
 	sudo yum install -y ./libevent-devel-2.0.21-4.el7.i686.rpm
 	rm ./libevent-devel-2.0.21-4.el7.i686.rpm
-	sudo yum -y install mesos	
+	sudo yum -y install mesos
+	
+	## 停止所有mesos服务
+	sudo systemctl stop mesos-master.service
+	sudo systemctl disable mesos-master.service
+	sudo systemctl stop marathon.service
+	sudo systemctl disable marathon.service
+	sudo systemctl stop mesos-slave.service
+	sudo systemctl disable mesos-slave.service
 }
 
 install_marathon()
 {
 	sudo yum -y install marathon
-	sudo systemctl stop marathon.service
-	sudo systemctl disable marathon.service
+
 }
 
 install_rexray()
