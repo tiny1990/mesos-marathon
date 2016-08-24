@@ -7,6 +7,7 @@ SLAVE_IP=$(cat slave)
 
 
 install_mesos
+install_marathon
 uninstall_mesos_slave
 install_etcd $MASTER_IP:2379
 install_zookeeper

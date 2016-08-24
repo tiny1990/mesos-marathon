@@ -10,6 +10,11 @@ install_mesos()
 	sudo yum -y install mesos	
 }
 
+install_marathon()
+{
+	sudo yum -y install marathon
+}
+
 install_rexray()
 {
 sudo curl -sSL https://dl.bintray.com/emccode/rexray/install | sh -s -- stable 0.3.3
