@@ -12,8 +12,6 @@ install_mesos()
 	## 停止所有mesos服务
 	sudo systemctl stop mesos-master.service
 	sudo systemctl disable mesos-master.service
-	sudo systemctl stop marathon.service
-	sudo systemctl disable marathon.service
 	sudo systemctl stop mesos-slave.service
 	sudo systemctl disable mesos-slave.service
 }
@@ -21,7 +19,6 @@ install_mesos()
 install_marathon()
 {
 	sudo yum -y install marathon
-
 }
 
 install_rexray()
@@ -39,18 +36,6 @@ sudo sed -i 's/AKEY/'$1'/g' /etc/rexray/config.yml
 sudo sed -i 's/SKEY/'$2'/g' /etc/rexray/config.yml
 sudo rexray service start
 #sudo rexray start -c /etc/rexray/config.yml
-}
-
-uninstall_mesos_slave()
-{
-	sudo systemctl stop mesos-slave.service
-	sudo systemctl disable mesos-slave.service
-}
-
-uninstall_mesos_master()
-{
-	sudo systemctl stop mesos-master.service
-	sudo systemctl disable mesos-master.service
 }
 
 
@@ -80,10 +65,10 @@ start_mesos_master()
 	sudo mesos-master --ip=0.0.0.0 --work_dir=/var/lib/mesos  &
 }
 
+# $1 ip use local ip $2 is hostname
 start_mesos_marathon()
 {
-	#   is not support?
-	sudo marathon --master $1:5050 --hostname $1 --zk zk://$2 --http_port 8888 --enable_features external_volumes &
+	sudo marathon --master $1:5050 --hostname $2 --zk zk://$1:2181/marathon --http_port 8888 --enable_features external_volumes &
 }
 
 start_mesos_slave()
@@ -96,8 +81,6 @@ start_mesos_slave_calico()
 	wget http://www.projectcalico.org/builds/calicoctl
 	chmod +x calicoctl
 	sudo mv calicoctl /bin
-	sudo docker pull calico/node-libnetwork:latest
-	sudo docker pull calico/node:latest
 	sudo ETCD_AUTHORITY=$1 calicoctl node --libnetwork
 	sudo ETCD_AUTHORITY=$1 calicoctl pool add 192.168.0.0/16 --ipip --nat-outgoing
 	sudo docker network create --driver calico --ipam-driver calico datapipeline 
@@ -108,6 +91,7 @@ start_mesos_slave_calico()
 start_mesos_dns()
 {
 	## TODO
+	sudo rm -rf /usr/local/mesos-dns
 	sudo mkdir -p /usr/local/mesos-dns/
 	sudo wget -O /usr/local/mesos-dns/mesos-dns  https://github.com/mesosphere/mesos-dns/releases/download/v0.5.2/mesos-dns-v0.5.2-linux-amd64
     sudo chmod +x /usr/local/mesos-dns/mesos-dns
