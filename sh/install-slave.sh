@@ -1,5 +1,5 @@
 #! /bin/bash
-. ./shell/install-centos7.sh
+. ./sh/install-centos7.sh
 
 
 ## 安装 mesos

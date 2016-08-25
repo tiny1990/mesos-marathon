@@ -1,6 +1,6 @@
 #! /bin/bash
 
-. ./shell/install-centos7.sh
+. ./sh/install-centos7.sh
 
 install_mesos
 install_marathon

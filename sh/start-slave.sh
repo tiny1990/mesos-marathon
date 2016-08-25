@@ -1,5 +1,5 @@
 #! /bin/bash
-. ./shell/install-centos7.sh
+. ./sh/install-centos7.sh
 
 MASTER_IP=$(cat ./master)
 SLAVE_IP=$(cat ./slave)
