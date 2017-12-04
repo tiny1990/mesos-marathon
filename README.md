@@ -10,7 +10,6 @@
 4. calico
 5. rex-ray
 
-
 #### How to use
 1. add slaves(ip or domain) into servers/slaves
 2. ```./shell/deploy``` # copy shell to echo slave
